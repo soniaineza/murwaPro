@@ -33,8 +33,8 @@ export default async function HomePage() {
       {/* Hero Section */}
       {heroMovie && <HeroBanner content={heroMovie} />}
 
-      {/* Content Sections */}
-      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto -mt-20 relative z-10">
+      {/* Content Sections - negative margin overlaps hero bottom, z-10 above particles */}
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto -mt-10 relative z-10 pt-10 pb-8 space-y-10">
         <HomePageContent
           featuredMovies={data.featuredMovies}
           trendingMovies={data.trendingMovies}

@@ -23,13 +23,13 @@ function mapMovie(m: any) {
 }
 
 export function HomePageContent({
-  featuredMovies, trendingMovies, newReleases, rwandanMovies,
+  trendingMovies, newReleases, rwandanMovies,
   freeMovies, premiumMovies, books, inganzo,
 }: HomePageContentProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-8">
+    <>
       {/* Continue Watching */}
       <ContentCarousel title={t("home.continueWatching")} viewAllHref="/continue-watching">
         <div className="flex gap-4">
@@ -73,6 +73,6 @@ export function HomePageContent({
       <ContentCarousel title={t("home.premium")} subtitle={t("home.premiumSub")} viewAllHref="/premium">
         {premiumMovies.map((m) => <MovieCard key={m.id} movie={mapMovie(m)} size="lg" />)}
       </ContentCarousel>
-    </div>
+    </>
   );
 }

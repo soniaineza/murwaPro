@@ -13,12 +13,12 @@ export function HeroBanner({ content }: HeroBannerProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="relative w-full h-[70vh] min-h-[500px] max-h-[800px]">
+    <div className="relative w-full h-[75vh] min-h-[550px] max-h-[850px]">
       <Image src={content.backdrop} alt={content.title} fill className="object-cover" priority sizes="100vw" />
       <div className="hero-gradient absolute inset-0" />
       <div className="hero-gradient-left absolute inset-0" />
 
-      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-16">
+      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-16 pb-24 sm:pb-16">
         <div className="max-w-2xl animate-fade-in-up">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-3 text-glow">
             {content.title}
