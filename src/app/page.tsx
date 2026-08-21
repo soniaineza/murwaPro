@@ -6,7 +6,7 @@ import { InganzoCard } from "@/components/content/InganzoCard";
 import { ContinueWatchingCard } from "@/components/content/ContinueWatchingCard";
 import { ContentCarousel } from "@/components/content/ContentCarousel";
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const dynamic = 'force-dynamic'; // Always render on the server
 
 async function getData() {
   const [featuredMovies, trendingMovies, newReleases, rwandanMovies, freeMovies, premiumMovies, books, inganzo] = await Promise.all([
