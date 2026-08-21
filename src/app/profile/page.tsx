@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import {
-  User, List, Clock, Heart, Settings, Bell, Crown, LogOut, ChevronRight,
+  User, List, Clock, Heart, Settings, Bell, Crown, LogOut, ChevronRight, Download, Upload,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -11,6 +11,8 @@ const menuItems = [
   { label: "My List", href: "/my-list", icon: List },
   { label: "Continue Watching", href: "/continue-watching", icon: Clock },
   { label: "Favorites", href: "/favorites", icon: Heart },
+  { label: "Downloads", href: "/downloads", icon: Download },
+  { label: "Creator Studio", href: "/creator", icon: Upload },
   { label: "Notifications", href: "/notifications", icon: Bell },
   { label: "Premium", href: "/premium", icon: Crown },
   { label: "Settings", href: "/settings", icon: Settings },
