@@ -6,13 +6,11 @@ import Link from "next/link";
 import { Play, Plus, Download, Star, ChevronLeft } from "lucide-react";
 import { ContentCarousel } from "@/components/content/ContentCarousel";
 import { MovieCard } from "@/components/content/MovieCard";
+import { useTranslation } from "@/i18n/TranslationProvider";
 
-export default function MovieDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default function MovieDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  const { t } = useTranslation();
   const [movie, setMovie] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,22 +21,13 @@ export default function MovieDetailPage({
       .then((data) => {
         setMovie(data);
         setLoading(false);
-        // Fetch related by genre
         if (data.genres?.length > 0) {
           const genreName = data.genres[0]?.genre?.name;
           if (genreName) {
             fetch(`/api/movies?genre=${genreName}`)
               .then((r) => r.json())
               .then((movies) => {
-                setRelated(
-                  movies
-                    .filter((m: any) => m.id !== data.id)
-                    .slice(0, 6)
-                    .map((m: any) => ({
-                      ...m,
-                      genres: m.genres?.map((mg: any) => mg.genre.name) || [],
-                    }))
-                );
+                setRelated(movies.filter((m: any) => m.id !== data.id).slice(0, 6).map((m: any) => ({ ...m, genres: m.genres?.map((mg: any) => mg.genre.name) || [] })));
               });
           }
         }
@@ -62,26 +51,22 @@ export default function MovieDetailPage({
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-lg text-muted-light mb-4">Movie not found</p>
-          <Link href="/movies" className="text-primary hover:underline">Back to Movies</Link>
+          <p className="text-lg text-muted-light mb-4">{t("movies.noResults")}</p>
+          <Link href="/movies" className="text-primary hover:underline">{t("movies.backToMovies")}</Link>
         </div>
       </div>
     );
   }
 
-  const mappedMovie = {
-    ...movie,
-    genres: movie.genres?.map((mg: any) => mg.genre.name) || [],
-  };
+  const mappedMovie = { ...movie, genres: movie.genres?.map((mg: any) => mg.genre.name) || [] };
 
   return (
     <div className="min-h-screen pb-24 md:pb-12">
-      {/* Backdrop */}
       <div className="relative w-full h-[50vh] sm:h-[60vh] max-h-[700px]">
         <Image src={movie.backdrop} alt={movie.title} fill className="object-cover" priority sizes="100vw" />
         <div className="hero-gradient absolute inset-0" />
         <Link href="/movies" className="absolute top-20 left-4 sm:left-8 z-10 flex items-center gap-1 text-sm text-white/70 hover:text-white transition-colors">
-          <ChevronLeft size={16} /> Back to Movies
+          <ChevronLeft size={16} /> {t("movies.backToMovies")}
         </Link>
       </div>
 
@@ -131,29 +116,29 @@ export default function MovieDetailPage({
             <div className="flex flex-wrap items-center gap-3 mb-8">
               <Link href={`/watch/${movie.id}`} className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-black font-semibold rounded-lg transition-colors">
                 <Play size={18} fill="black" />
-                {movie.access === "PREMIUM" ? "Watch Premium" : "Watch Now"}
+                {movie.access === "PREMIUM" ? t("movies.watchPremium") : t("movies.watchNow")}
               </Link>
               <button className="inline-flex items-center gap-2 px-5 py-3 bg-surface hover:bg-surface-elevated border border-border text-foreground font-medium rounded-lg transition-colors">
-                <Plus size={16} /> Add to My List
+                <Plus size={16} /> {t("movies.addToMyList")}
               </button>
               <button className="inline-flex items-center gap-2 px-5 py-3 bg-surface hover:bg-surface-elevated border border-border text-foreground font-medium rounded-lg transition-colors">
-                <Download size={16} /> Download
+                <Download size={16} /> {t("movies.download")}
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm mb-8">
-              {movie.director && (<div><span className="text-muted">Director</span><p className="text-foreground font-medium">{movie.director}</p></div>)}
-              {movie.cast?.length > 0 && (<div><span className="text-muted">Cast</span><p className="text-foreground font-medium">{movie.cast.join(", ")}</p></div>)}
-              {movie.creator && (<div><span className="text-muted">Creator</span><p className="text-foreground font-medium">{movie.creator}</p></div>)}
-              <div><span className="text-muted">Language</span><p className="text-foreground font-medium">{movie.language}</p></div>
+              {movie.director && (<div><span className="text-muted">{t("movies.director")}</span><p className="text-foreground font-medium">{movie.director}</p></div>)}
+              {movie.cast?.length > 0 && (<div><span className="text-muted">{t("movies.cast")}</span><p className="text-foreground font-medium">{movie.cast.join(", ")}</p></div>)}
+              {movie.creator && (<div><span className="text-muted">{t("movies.creator")}</span><p className="text-foreground font-medium">{movie.creator}</p></div>)}
+              <div><span className="text-muted">{t("movies.language")}</span><p className="text-foreground font-medium">{movie.language}</p></div>
             </div>
           </div>
         </div>
 
         {related.length > 0 && (
           <div className="mt-12">
-            <ContentCarousel title="You May Also Like" viewAllHref="/movies">
-              {related.map((m) => (<MovieCard key={m.id} movie={m} />))}
+            <ContentCarousel title={t("movies.youMayAlsoLike")} viewAllHref="/movies">
+              {related.map((m) => <MovieCard key={m.id} movie={m} />)}
             </ContentCarousel>
           </div>
         )}

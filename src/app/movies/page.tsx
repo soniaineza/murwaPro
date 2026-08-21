@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { MovieCard } from "@/components/content/MovieCard";
+import { CinematicBackground } from "@/components/content/CinematicBackground";
+import { useTranslation } from "@/i18n/TranslationProvider";
 import { GenreChip } from "@/components/content/GenreChip";
 import { cn } from "@/lib/utils";
 import { GENRES } from "@/lib/constants";
@@ -40,6 +42,7 @@ function mapMovie(m: DbMovie) {
 }
 
 export default function MoviesPage() {
+  const { t } = useTranslation();
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -109,11 +112,12 @@ export default function MoviesPage() {
     searchQuery || selectedGenres.length > 0 || selectedYear || selectedLanguage || selectedAccess;
 
   return (
-    <div className="min-h-screen pt-20 pb-24 md:pb-12">
-      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="min-h-screen pt-20 pb-24 md:pb-12 relative">
+      <CinematicBackground theme="gold" particleCount={800} speed={0.02} />
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Movies</h1>
-          <p className="text-muted mt-2">Discover stories worth watching.</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground">{t("movies.title")}</h1>
+          <p className="text-muted mt-2">{t("movies.subtitle")}</p>
         </div>
 
         {/* Search & Filter Toggle */}

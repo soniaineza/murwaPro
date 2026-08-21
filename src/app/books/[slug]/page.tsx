@@ -6,9 +6,11 @@ import Link from "next/link";
 import { BookOpen, Plus, Download, Star, ChevronLeft, User } from "lucide-react";
 import { ContentCarousel } from "@/components/content/ContentCarousel";
 import { BookCard } from "@/components/content/BookCard";
+import { useTranslation } from "@/i18n/TranslationProvider";
 
 export default function BookDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  const { t } = useTranslation();
   const [book, setBook] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,9 +22,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
         setBook(data);
         setLoading(false);
         if (data.genre) {
-          fetch(`/api/books?genre=${data.genre}`)
-            .then((r) => r.json())
-            .then((books) => setRelated(books.filter((b: any) => b.id !== data.id).slice(0, 6)));
+          fetch(`/api/books?genre=${data.genre}`).then((r) => r.json()).then((books) => setRelated(books.filter((b: any) => b.id !== data.id).slice(0, 6)));
         }
       })
       .catch(() => setLoading(false));
@@ -41,7 +41,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
   if (!book || book.error) {
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center">
-        <div className="text-center"><p className="text-lg text-muted-light mb-4">Book not found</p><Link href="/books" className="text-primary hover:underline">Back to Books</Link></div>
+        <div className="text-center"><p className="text-lg text-muted-light mb-4">{t("books.noResults")}</p><Link href="/books" className="text-primary hover:underline">{t("generic.back")}</Link></div>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
     <div className="min-h-screen pt-20 pb-24 md:pb-12">
       <div className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         <Link href="/books" className="inline-flex items-center gap-1 text-sm text-muted-light hover:text-primary transition-colors mb-8">
-          <ChevronLeft size={16} /> Back to Books
+          <ChevronLeft size={16} /> {t("generic.back")}
         </Link>
 
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-10">
@@ -71,20 +71,20 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
             <p className="text-sm sm:text-base text-muted-light leading-relaxed mb-6">{book.description}</p>
             <div className="flex flex-wrap items-center gap-3 mb-8">
               <Link href={`/read/${book.id}`} className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-black font-semibold rounded-lg transition-colors">
-                <BookOpen size={18} /> Read Now
+                <BookOpen size={18} /> {t("books.readNow")}
               </Link>
               <button className="inline-flex items-center gap-2 px-5 py-3 bg-surface hover:bg-surface-elevated border border-border text-foreground font-medium rounded-lg transition-colors">
-                <Plus size={16} /> Add to Library
+                <Plus size={16} /> {t("books.addToLibrary")}
               </button>
               <button className="inline-flex items-center gap-2 px-5 py-3 bg-surface hover:bg-surface-elevated border border-border text-foreground font-medium rounded-lg transition-colors">
-                <Download size={16} /> Download
+                <Download size={16} /> {t("movies.download")}
               </button>
             </div>
             {book.authorBio && (
               <div className="p-4 bg-surface border border-border rounded-xl">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-full bg-surface-elevated flex items-center justify-center"><User size={18} className="text-muted-light" /></div>
-                  <div><p className="text-sm font-medium text-foreground">{book.author}</p><p className="text-xs text-muted">Author</p></div>
+                  <div><p className="text-sm font-medium text-foreground">{book.author}</p><p className="text-xs text-muted">{t("books.author")}</p></div>
                 </div>
                 <p className="text-sm text-muted-light leading-relaxed">{book.authorBio}</p>
               </div>
@@ -94,7 +94,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
 
         {related.length > 0 && (
           <div className="mt-12">
-            <ContentCarousel title="You May Also Like" viewAllHref="/books">
+            <ContentCarousel title={t("movies.youMayAlsoLike")} viewAllHref="/books">
               {related.map((b) => (<BookCard key={b.id} book={b} />))}
             </ContentCarousel>
           </div>
