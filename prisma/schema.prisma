@@ -1,0 +1,438 @@
+// MurwaPro Database Schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Users & Auth ────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  avatar        String?
+  role          UserRole  @default(USER)
+  language      String    @default("en")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile         Profile?
+  watchHistory    WatchHistory[]
+  readingProgress ReadingProgress[]
+  myList          MyList[]
+  favorites       Favorite[]
+  notifications   Notification[]
+  reviews         Review[]
+  downloads       Download[]
+  subscription    Subscription?
+  sessions        Session[]
+}
+
+enum UserRole {
+  USER
+  CREATOR
+  EDITOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Profile {
+  id           String  @id @default(cuid())
+  userId       String  @unique
+  bio          String?
+  displayName  String?
+  dateOfBirth  DateTime?
+  country      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Movies & Series ─────────────────────────────────────
+
+model Movie {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  title         String
+  tagline       String?
+  description   String
+  poster        String
+  backdrop      String
+  trailerUrl    String?
+  year          Int
+  duration      Int         // minutes
+  language      String
+  country       String
+  rating        Float       @default(0)
+  ageRating     String?
+  director      String?
+  cast          String[]    @default([])
+  creator       String?
+  access        AccessLevel @default(FREE)
+  featured      Boolean     @default(false)
+  trending      Boolean     @default(false)
+  isNew         Boolean     @default(false)
+  isRwandan     Boolean     @default(false)
+  isAfrican     Boolean     @default(false)
+  freeToWatch   Boolean     @default(false)
+  videoUrl      String?
+  published     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  genres         MovieGenre[]
+  episodes       Episode[]
+  watchHistory   WatchHistory[]
+  myLists        MyList[]
+  favorites      Favorite[]
+  reviews        Review[]
+  downloads      Download[]
+}
+
+model Series {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  title         String
+  tagline       String?
+  description   String
+  poster        String
+  backdrop      String
+  trailerUrl    String?
+  year          Int
+  language      String
+  country       String
+  rating        Float       @default(0)
+  ageRating     String?
+  creator       String?
+  totalEpisodes Int         @default(0)
+  access        AccessLevel @default(FREE)
+  featured      Boolean     @default(false)
+  trending      Boolean     @default(false)
+  isNew         Boolean     @default(false)
+  isRwandan     Boolean     @default(false)
+  isAfrican     Boolean     @default(false)
+  published     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  genres    SeriesGenre[]
+  seasons   Season[]
+  myLists   MyList[]
+  favorites Favorite[]
+  reviews   Review[]
+}
+
+model Season {
+  id        String   @id @default(cuid())
+  number    Int
+  title     String
+  seriesId  String
+  createdAt DateTime @default(now())
+
+  series   Series    @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  episodes Episode[]
+
+  @@unique([seriesId, number])
+}
+
+model Episode {
+  id          String   @id @default(cuid())
+  number      Int
+  title       String
+  description String
+  duration    Int      // minutes
+  thumbnail   String
+  videoUrl    String?
+  seasonId    String?
+  movieId     String?
+  createdAt   DateTime @default(now())
+
+  season      Season?       @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  movie       Movie?        @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  watchHistory WatchHistory[]
+}
+
+// ─── Books ───────────────────────────────────────────────
+
+model Book {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  title         String
+  author        String
+  authorBio     String?
+  authorAvatar  String?
+  cover         String
+  description   String
+  genre         String
+  language      String
+  year          Int
+  pages         Int
+  rating        Float       @default(0)
+  access        AccessLevel @default(FREE)
+  featured      Boolean     @default(false)
+  isNew         Boolean     @default(false)
+  isRwandan     Boolean     @default(false)
+  isAfrican     Boolean     @default(false)
+  fileUrl       String?
+  published     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  readingProgress ReadingProgress[]
+  myLists         MyList[]
+  favorites       Favorite[]
+  reviews         Review[]
+  downloads       Download[]
+}
+
+// ─── Inganzo ─────────────────────────────────────────────
+
+model Inganzo {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  author      String
+  authorBio   String?
+  type        InganzoType
+  language    String
+  date        DateTime
+  excerpt     String
+  content     String
+  access      AccessLevel @default(FREE)
+  published   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  myLists    MyList[]
+  favorites  Favorite[]
+  reviews    Review[]
+}
+
+enum InganzoType {
+  IBISIGO
+  IMIVUGO
+  POEM
+  SHORT_STORY
+  LITERATURE
+  TRADITIONAL
+  MODERN
+}
+
+// ─── Genres ──────────────────────────────────────────────
+
+model Genre {
+  id    String @id @default(cuid())
+  name  String @unique
+
+  movies     MovieGenre[]
+  series     SeriesGenre[]
+}
+
+model MovieGenre {
+  movieId  String
+  genreId  String
+
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, genreId])
+}
+
+model SeriesGenre {
+  seriesId String
+  genreId  String
+
+  series Series @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  genre  Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([seriesId, genreId])
+}
+
+// ─── User Interactions ───────────────────────────────────
+
+enum AccessLevel {
+  FREE
+  PREMIUM
+}
+
+model WatchHistory {
+  id         String   @id @default(cuid())
+  userId     String
+  movieId    String?
+  episodeId  String?
+  progress   Int      @default(0) // percentage 0-100
+  position   Int      @default(0) // seconds
+  watchedAt  DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie   Movie?   @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  episode Episode? @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@unique([userId, episodeId])
+}
+
+model ReadingProgress {
+  id         String   @id @default(cuid())
+  userId     String
+  bookId     String
+  currentPage Int     @default(1)
+  percentage  Float   @default(0)
+  lastReadAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+}
+
+model MyList {
+  id        String   @id @default(cuid())
+  userId    String
+  movieId   String?
+  seriesId  String?
+  bookId    String?
+  inganzoId String?
+  addedAt   DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie    Movie?    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  series   Series?   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  book     Book?     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  inganzo  Inganzo?  @relation(fields: [inganzoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@unique([userId, seriesId])
+  @@unique([userId, bookId])
+  @@unique([userId, inganzoId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  movieId   String?
+  seriesId  String?
+  bookId    String?
+  inganzoId String?
+  createdAt DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie    Movie?    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  series   Series?   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  book     Book?     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  inganzo  Inganzo?  @relation(fields: [inganzoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@unique([userId, seriesId])
+  @@unique([userId, bookId])
+  @@unique([userId, inganzoId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  movieId   String?
+  seriesId  String?
+  bookId    String?
+  inganzoId String?
+  rating    Float
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie    Movie?    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  series   Series?   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  book     Book?     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  inganzo  Inganzo?  @relation(fields: [inganzoId], references: [id], onDelete: Cascade)
+}
+
+// ─── Notifications ───────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  read      Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum NotificationType {
+  NEW_MOVIE
+  NEW_BOOK
+  NEW_INGANZO
+  NEW_EPISODE
+  SUBSCRIPTION
+  SYSTEM
+}
+
+// ─── Downloads ───────────────────────────────────────────
+
+model Download {
+  id        String       @id @default(cuid())
+  userId    String
+  movieId   String?
+  bookId    String?
+  quality   String?
+  status    DownloadStatus @default(PENDING)
+  filePath  String?
+  createdAt DateTime     @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie? @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  book  Book?  @relation(fields: [bookId], references: [id], onDelete: Cascade)
+}
+
+enum DownloadStatus {
+  PENDING
+  DOWNLOADING
+  COMPLETED
+  FAILED
+}
+
+// ─── Subscriptions ───────────────────────────────────────
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  plan      SubscriptionPlan   @default(FREE)
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime           @default(now())
+  endDate   DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
