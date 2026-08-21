@@ -5,6 +5,7 @@ import { BookCard } from "@/components/content/BookCard";
 import { InganzoCard } from "@/components/content/InganzoCard";
 import { ContinueWatchingCard } from "@/components/content/ContinueWatchingCard";
 import { ContentCarousel } from "@/components/content/ContentCarousel";
+import { ParticleBackground } from "@/components/content/ParticleBackground";
 
 export const dynamic = 'force-dynamic'; // Always render on the server
 
@@ -36,6 +37,9 @@ export default async function HomePage() {
 
   return (
     <div>
+      {/* Three.js Particle Background */}
+      <ParticleBackground />
+
       {/* Hero Section */}
       {heroMovie && <HeroBanner content={heroMovie} />}
 
