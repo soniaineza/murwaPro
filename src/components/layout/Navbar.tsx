@@ -14,6 +14,11 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -24,6 +29,19 @@ export function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  // Always render the same thing on server and client to avoid hydration mismatch
+  const signInButton = (
+    <Link href="/login" className="px-4 py-2 text-sm font-medium bg-primary hover:bg-primary-hover text-black rounded-lg transition-colors">
+      Sign In
+    </Link>
+  );
+
+  const userIcon = (
+    <Link href="/login" className="p-2 text-muted-light hover:text-foreground transition-colors" aria-label="Sign In">
+      <User size={20} />
+    </Link>
+  );
 
   return (
     <>
@@ -63,8 +81,8 @@ export function Navbar() {
                 <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent rounded-full" />
               </Link>
 
-              {/* Profile / Sign In */}
-              {session ? (
+              {/* Profile / Sign In - render same on server and client */}
+              {!mounted ? signInButton : session ? (
                 <div className="relative">
                   <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 p-1.5 rounded-md hover:bg-surface transition-colors">
                     {session.user?.image ? (
@@ -97,11 +115,7 @@ export function Navbar() {
                     </>
                   )}
                 </div>
-              ) : (
-                <Link href="/login" className="px-4 py-2 text-sm font-medium bg-primary hover:bg-primary-hover text-black rounded-lg transition-colors">
-                  Sign In
-                </Link>
-              )}
+              ) : signInButton}
             </div>
 
             {/* Mobile Right */}
@@ -109,7 +123,11 @@ export function Navbar() {
               <Link href="/search" className="p-2 text-muted-light hover:text-foreground transition-colors" aria-label="Search">
                 <Search size={20} />
               </Link>
-              {session ? (
+              {!mounted ? (
+                <Link href="/login" className="p-2 text-muted-light hover:text-foreground transition-colors" aria-label="Sign In">
+                  <User size={20} />
+                </Link>
+              ) : session ? (
                 <Link href="/profile" className="p-2 text-muted-light hover:text-foreground transition-colors" aria-label="Profile">
                   {session.user?.image ? (
                     <img src={session.user.image} alt="" className="w-5 h-5 rounded-full" />
@@ -143,7 +161,7 @@ export function Navbar() {
               ))}
               <Link href="/my-list" className="block px-4 py-3 text-base font-medium text-muted-light hover:text-foreground hover:bg-surface-elevated rounded-lg transition-colors">My List</Link>
               <Link href="/premium" className="block px-4 py-3 text-base font-medium text-primary hover:bg-primary-dim rounded-lg transition-colors">Premium</Link>
-              {session && (
+              {mounted && session && (
                 <button onClick={() => signOut({ callbackUrl: "/" })} className="w-full text-left px-4 py-3 text-base font-medium text-accent hover:bg-accent/10 rounded-lg transition-colors">
                   Sign Out
                 </button>
