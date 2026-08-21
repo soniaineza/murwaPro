@@ -6,6 +6,7 @@ import Link from "next/link";
 import { BookOpen, Plus, Download, Star, ChevronLeft, User } from "lucide-react";
 import { ContentCarousel } from "@/components/content/ContentCarousel";
 import { BookCard } from "@/components/content/BookCard";
+import { ReviewSection } from "@/components/content/ReviewSection";
 import { useTranslation } from "@/i18n/TranslationProvider";
 
 export default function BookDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -91,6 +92,8 @@ export default function BookDetailPage({ params }: { params: Promise<{ slug: str
             )}
           </div>
         </div>
+
+        <ReviewSection bookId={book.id} />
 
         {related.length > 0 && (
           <div className="mt-12">

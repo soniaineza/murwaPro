@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Play, Plus, Download, Star, ChevronLeft } from "lucide-react";
 import { ContentCarousel } from "@/components/content/ContentCarousel";
 import { MovieCard } from "@/components/content/MovieCard";
+import { ReviewSection } from "@/components/content/ReviewSection";
 import { useTranslation } from "@/i18n/TranslationProvider";
 
 export default function MovieDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -134,6 +135,8 @@ export default function MovieDetailPage({ params }: { params: Promise<{ slug: st
             </div>
           </div>
         </div>
+
+        <ReviewSection movieId={movie.id} />
 
         {related.length > 0 && (
           <div className="mt-12">

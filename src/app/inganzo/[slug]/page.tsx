@@ -4,6 +4,7 @@ import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, Feather, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ReviewSection } from "@/components/content/ReviewSection";
 
 const typeColors: Record<string, string> = {
   IBISIGO: "bg-primary/20 text-primary",
@@ -97,6 +98,8 @@ export default function InganzoDetailPage({ params }: { params: Promise<{ slug: 
           <button className="px-4 py-2 text-sm font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/10 transition-colors">Save to Library</button>
           <button className="px-4 py-2 text-sm font-medium text-muted-light border border-border rounded-lg hover:bg-surface transition-colors">Share</button>
         </div>
+
+        <ReviewSection inganzoId={work.id} />
       </div>
     </div>
   );
