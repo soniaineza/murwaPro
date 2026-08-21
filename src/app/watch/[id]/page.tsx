@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { trackView } from "@/lib/analytics";
 import {
   ChevronLeft, Play, Pause, Volume2, VolumeX, Maximize,
   Settings, SkipBack, SkipForward, Subtitles
@@ -33,6 +34,7 @@ export default function WatchPage({ params }: { params: Promise<{ id: string }> 
         setMovie(m);
         setDuration(m ? m.duration * 60 : 0);
         setLoading(false);
+        if (m) trackView(m.id);
       })
       .catch(() => setLoading(false));
   }, [id]);
